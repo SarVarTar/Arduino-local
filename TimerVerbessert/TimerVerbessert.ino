@@ -9,118 +9,102 @@ int MENUE;
 int ZAEHLEN; 
 
 void setup()
-  { 
-    noInterrupts();
-    TCCR1A = 0;
-    TCCR1B = 0;
-    TCNT1 = 0;
-    OCR1A = 625;
-    TCCR1B |= (1<<CS12);
-    TIMSK1 |= (1<<OCIE1A);
-    
-    interrupts();
-    
+  {    
     //MENUE AUFBAUEN
     lcd.init();
     lcd.backlight();
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("(1) START/RESET");
+    lcd.print("(1) START");
     lcd.setCursor(0,1);
-    lcd.print("(2) STOPP");
+    lcd.print("(2) ");
     lcd.setCursor(0,0);
     
     pinMode(2, INPUT); //Starttaste
     pinMode(3, INPUT); //Stopptaste
     pinMode(4, INPUT); //Zeitnehmen (und spiechern)
     pinMode(5, INPUT); //Stopp
+
+    TCCR1A = 0;
+    TCCR1B = 0;
+    TCNT1 = 0;
+    OCR1A = 625;
+    TCCR1B |= (1<<CS12);
+    TIMSK1 |= (1<<OCIE1A);
   }
 
 ISR(TIMER1_COMPA_vect){
   TCNT1 = 0;
 
-   if(MINUTES <= 59)
-  {
-    if(SECONDS == 59)
-      MINUTES += 1;
-  }
-  else{
-      MINUTES = 0;
-    }  
-
-   if(SECONDS <= 59)
-  {
-    if(MILLIS == 59)
-      SECONDS += 1;
-  }
-  else{
-      SECONDS = 0;
-    }
-  
-  if(MILLIS <= 59)
+  if(MILLIS <= 99)
   {
     MILLIS += 1;
   }
-  else{
-      MILLIS = 0;
-    }
-    
+  else
+  {
+    MILLIS = 0;
+    SECONDS += 1;
   }
   
-void ZEITZEIGEN()
+  if(SECONDS > 59)
   {
+    SECONDS = 0;
+    MINUTES += 1;
+  }
+}
+
+void ZEITZEIGEN(){
     lcd.setCursor(0,0);
+    if(MINUTES < 10)
+    {
+      lcd.print("0");
+    }
     lcd.print(MINUTES);
     lcd.print(".");
+    if(SECONDS < 10)
+    {
+      lcd.print("0");
+    }
     lcd.print(SECONDS);
     lcd.print(".");
     lcd.print(MILLIS);
     lcd.print(".");
 }
 
-void loop()
-  {
-    if (digitalRead(2) == HIGH)
-      {
+void Timer(){
+      MENUE = 1;
       ZAEHLEN = 1;
       MILLIS = SECONDS = MINUTES = 0;
+      TCNT1 = 0;
+      lcd.setCursor(0,1);
+      lcd.print("(2) STOPP       ");
       lcd.setCursor(0,0);
-      lcd.print("GESTARTET ...");
+      lcd.print("                ");
       
-      while(1){
+      while(ZAEHLEN){
         ZEITZEIGEN();
-        delay(100);
         lcd.setCursor(0,0);
-        if(digitalRead(4)== HIGH){
-          //SAVE TIME
-        }
-        if(digitalRead(5)== HIGH){
+        if(digitalRead(3)== HIGH){
           ZAEHLEN = 0;
-        }
-        if(ZAEHLEN == 0){
-          ZAEHLEN = 1;
-          break;
+          lcd.setCursor(0,1);
+          lcd.print("(3) ZURUCK");
         }
       }
+      while(digitalRead(4) != HIGH){
+        
       }
-    if (digitalRead(3) == HIGH)
+}
+
+void loop()
   {
-    MENUE = 1;
+    if(MENUE != 0){
+    lcd.setCursor(0,0);
+    lcd.print("(1) START       ");
+    lcd.setCursor(0,1);
+    lcd.print("(2)             ");
     }
-    
-    while(MENUE == 1) {
-      if (digitalRead(3) == LOW){
-           ZEITZEIGEN();
-           MENUE = 0;
-           delay(4000);
-           lcd.setCursor(0,0);
-           lcd.print("(1) START/RESET");
-           lcd.setCursor(0,1);
-           lcd.print("(2) STOPP");
-           lcd.setCursor(0,0);
-           break;
-        }
-    
-  }
-  
+    if (digitalRead(2) == HIGH)
+    {
+      Timer();
+    }
 }

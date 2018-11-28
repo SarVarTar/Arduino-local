@@ -1,10 +1,14 @@
 #include <LiquidCrystal_I2C.h>
 
+#include <LiquidCrystal_I2C.h>
+
 LiquidCrystal_I2C lcd( 0x27, 16, 2);
 
 unsigned long finished, elapsed;
 int Zeit;
 int Trick;
+
+//testcomment
 
 void setup()
   { 

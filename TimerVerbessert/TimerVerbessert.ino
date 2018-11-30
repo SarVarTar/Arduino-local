@@ -17,15 +17,10 @@ int TASTE3 = 1;
 
 void setup()
   {    
-    //MENUE AUFBAUEN
+    //START DISPLAY
     lcd.init();
     lcd.backlight();
     lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("(1) START");
-    lcd.setCursor(0,1);
-    lcd.print("(2) ");
-    lcd.setCursor(0,0);
 
     //TASTEN INITIALISIEREN
     pinMode(2, INPUT); //Starttaste
@@ -39,7 +34,7 @@ void setup()
     TCNT1 = 0;
     OCR1A = 625;
     TCCR1B |= (1<<CS12);
-    TIMSK1 |= (1<<OCIE1A);
+    //TIMSK1 |= (1<<OCIE1A);
   }
 
 //ZÄHLROUTINE
@@ -161,6 +156,7 @@ void STOPPUHR()
   int ZEIT = 0;
   MILLIS = SECONDS = MINUTES = 0;
   TCNT1 = 0;
+  TIMSK1 |= (1<<OCIE1A); //TimerInterrupt an
   lcd.setCursor(0,1);
   lcd.print("(1)ZZ (2)S (3)<-");
   lcd.setCursor(0,0);
@@ -190,6 +186,7 @@ void STOPPUHR()
       }
     if(RUNDE == 10) break;
   }
+  TIMSK1 |= (0<<OCIE1A);//TimerINterrupt aus
 }
 
 void ZWISCHENZEITENMENU(){
@@ -247,7 +244,7 @@ void ZWISCHENZEITENMENU(){
 }
 
 void GESAMTZEIT(){
-  int ZEIT;
+  int ZEIT=0;
   for(int i = 0; i < 10; i++){
      ZEIT += ZWISCHENZEIT[i];
   }
@@ -258,7 +255,7 @@ void GESAMTZEIT(){
   lcd.print("(1)  (2)   (3)<-");
   while(1){
     if(TASTE()==3)break;
-    delay(1000);
+    delay(500);
   }
   MENUE = 4;
 }

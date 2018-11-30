@@ -68,8 +68,8 @@ void TOTIMESTAMP(){
 
 //UMWANDLUNG IN MINUTES SECONDS UND MILLIS
 void FROMTIMESTAMP(int ZEIT){
-  MINUTES = ZEIT % 100 % 60;
-  SECONDS = (ZEIT - MINUTES * 100 * 60) % 100;
+  MINUTES = ZEIT / 100 / 60;
+  SECONDS = (ZEIT - MINUTES * 100 * 60) / 100;
   MILLIS = (ZEIT - MINUTES * 100 * 60 - SECONDS * 100);
 }
 
@@ -112,6 +112,7 @@ void DRUCKEZEIT(){
     lcd.print(SECONDS);
     lcd.print(".");
     lcd.print(MILLIS);
+    lcd.print("       ");
 }
 
 //gibt zurück wie viele Tasten nicht gedrückt sind
@@ -251,6 +252,7 @@ void GESAMTZEIT(){
      ZEIT += ZWISCHENZEIT[i];
   }
   FROMTIMESTAMP(ZEIT);
+  lcd.setCursor(0,0);
   DRUCKEZEIT();
   lcd.setCursor(0,1);
   lcd.print("(1)  (2)   (3)<-");

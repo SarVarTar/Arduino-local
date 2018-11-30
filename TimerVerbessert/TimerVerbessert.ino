@@ -98,7 +98,7 @@ void ZWISCHENZEITSPEICHERN(int RUNDE, int ZEIT){
 
 //AKTUELLE ZEIT FORMATIERT AUSGEBEN
 void DRUCKEZEIT(){
-    lcd.setCursor(0,0);
+    //lcd.setCursor(0,0);
     if(MINUTES < 10)
     {
       lcd.print("0");
@@ -166,6 +166,7 @@ void STOPPUHR()
   lcd.print("                ");
   LEEREZWISCHENZEITEN();
   while(1){
+    lcd.setCursor(0,0);
     DRUCKEZEIT();
     switch(TASTE()){
       case 1:   TOTIMESTAMP();
@@ -199,7 +200,7 @@ void ZWISCHENZEITENMENU(){
       FROMTIMESTAMP(ZWISCHENZEIT[RUNDE]);
       DRUCKEZEIT();
       lcd.setCursor(0,1);
-      lcd.print("(1)v(2)  (3)<-");
+      lcd.print("(1)v (2)   (3)<-");
       while(RUNDE != 10)
       {
         switch(TASTE()){
@@ -207,12 +208,12 @@ void ZWISCHENZEITENMENU(){
                     if(RUNDE == 9)
                     {
                       lcd.setCursor(0,1);
-                      lcd.print("(1) (2)^ (3)<-");
+                      lcd.print("(1)  (2)^  (3)<-");
                     }
                     else // RUNDE zwischen 1 und 8
                     {
                       lcd.setCursor(0,1);
-                      lcd.print("(1)v(2)^ (3)<-");
+                      lcd.print("(1)v (2)^  (3)<-");
                     }
                     lcd.setCursor(0,0);
                     lcd.print(RUNDE+1);
@@ -224,12 +225,12 @@ void ZWISCHENZEITENMENU(){
                     if(RUNDE == 0)
                     {
                       lcd.setCursor(0,1);
-                      lcd.print("(1)v(2)  (3)<-");
+                      lcd.print("(1)v (2)   (3)<-");
                     }
                     else // RUNDE zwischen 1 und 8
                     {
                       lcd.setCursor(0,1);
-                      lcd.print("(1)v(2)^ (3)<-");
+                      lcd.print("(1)v (2)^  (3)<-");
                     }
                     lcd.setCursor(0,0);
                     lcd.print(RUNDE+1);
@@ -272,7 +273,7 @@ void SPEICHERMENU(){
   lcd.setCursor(0,0);
   lcd.print("                ");
   }
-    while(EBENE != -1){
+    while(EBENE == 0){
       switch(TASTE()){
         case 1: ZWISCHENZEITENMENU();
                 EBENE = -1;

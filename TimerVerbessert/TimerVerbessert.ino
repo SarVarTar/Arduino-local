@@ -154,6 +154,7 @@ void STOPPUHR()
   MENUE = 1;
   int RUNDE = 0;
   int ZEIT = 0;
+  int LASTTIMESTAMP = 0;
   MILLIS = SECONDS = MINUTES = 0;
   TCNT1 = 0;
   TIMSK1 |= (1<<OCIE1A); //TimerInterrupt an
@@ -167,13 +168,15 @@ void STOPPUHR()
     DRUCKEZEIT();
     switch(TASTE()){
       case 1:   TOTIMESTAMP();
-                ZEIT = TIMESTAMP - ZEIT;
+                ZEIT = TIMESTAMP - LASTTIMESTAMP;
+                LASTTIMESTAMP = TIMESTAMP;
                 ZWISCHENZEITSPEICHERN(RUNDE, ZEIT); 
                 RUNDE++;
                 delay(1000);
                 break;
       case 2:   TOTIMESTAMP();
-                ZEIT = TIMESTAMP - ZEIT;
+                ZEIT = TIMESTAMP - LASTTIMESTAMP;
+                LASTTIMESTAMP = TIMESTAMP;
                 ZWISCHENZEITSPEICHERN(RUNDE, ZEIT); 
                 RUNDE = 10;
                 TIMESTAMP = 0;
@@ -255,7 +258,6 @@ void GESAMTZEIT(){
   lcd.print("(1)  (2)   (3)<-");
   while(1){
     if(TASTE()==3)break;
-    delay(500);
   }
   MENUE = 4;
 }

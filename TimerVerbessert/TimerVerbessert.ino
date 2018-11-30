@@ -4,11 +4,11 @@ LiquidCrystal_I2C lcd( 0x27, 16, 2);
 
 //VARIABLEN
 
-int MILLIS;
-int SECONDS;
-int MINUTES;
-int MENUE;
-int TIMESTAMP;
+int MILLIS = 0;
+int SECONDS = 0;
+int MINUTES = 0;
+int MENUE = -1;
+int TIMESTAMP = 0;
 int HIGHSCORE[5];
 int ZWISCHENZEIT[10];
 int TASTE1 = 1;
@@ -27,23 +27,24 @@ void setup()
     lcd.print("(2) ");
     lcd.setCursor(0,0);
 
+    //TASTEN INITIALISIEREN
     pinMode(2, INPUT); //Starttaste
     pinMode(3, INPUT); //Stopptaste
     pinMode(4, INPUT); //Zeitnehmen (und spiechern)
     pinMode(5, INPUT); //Stopp
-
+    
+    //TIMER EINSTELLEN
     TCCR1A = 0;
     TCCR1B = 0;
     TCNT1 = 0;
     OCR1A = 625;
     TCCR1B |= (1<<CS12);
     TIMSK1 |= (1<<OCIE1A);
-    }
-    
+  }
+
+//ZÄHLROUTINE
 ISR(TIMER1_COMPA_vect){
-
   TCNT1 = 0;
-
   if(MILLIS <= 99)
   {
     MILLIS += 1;
@@ -60,37 +61,42 @@ ISR(TIMER1_COMPA_vect){
   }
 }
 
+//UMWANDLUNG IN MILLIS
 void TOTIMESTAMP(){
       TIMESTAMP = MINUTES * 60 * 100 + SECONDS * 100 + MILLIS;
   }
-  
+
+//UMWANDLUNG IN MINUTES SECONDS UND MILLIS
 void FROMTIMESTAMP(int ZEIT){
   MINUTES = ZEIT % 100 % 60;
   SECONDS = (ZEIT - MINUTES * 100 * 60) % 100;
   MILLIS = (ZEIT - MINUTES * 100 * 60 - SECONDS * 100);
 }
 
+//ABLEGEN DES TIMESTAMPS IM ZWISCHENZEITENSPEICHER
 void ZWISCHENZEITSPEICHERN(int RUNDE, int ZEIT){
       ZWISCHENZEIT[RUNDE] = ZEIT;
   }
 
-void HSSPEICHERN(){
+//HIGHSCORES AKTUALISIEREN
+/*void HSSPEICHERN(){
       for(int i = 0; i <= 4; i++){
          if(HIGHSCORE[i] > TIMESTAMP){
             int HELP, HELP2;
             HELP = HIGHSCORE[i];
             HIGHSCORE[i] = TIMESTAMP;
-            /*
+            
             for(int k = i; k >= 1; k--){
               HELP2 = HIGHSCORE[k - 1];
               HIGHSCORE[k - 1] = HELP;
               HELP = HELP2;
               }
-              */
+              
           } 
       }
-  } 
+  } */
 
+//AKTUELLE ZEIT FORMATIERT AUSGEBEN
 void DRUCKEZEIT(){
     lcd.setCursor(0,0);
     if(MINUTES < 10)
@@ -108,17 +114,21 @@ void DRUCKEZEIT(){
     lcd.print(MILLIS);
 }
 
-int TASTENSTATUS()//gibt zurück wie viele Tasten nicht gedrückt sind
+//gibt zurück wie viele Tasten nicht gedrückt sind
+int TASTENSTATUS()
 {
   int TASTENSTATUS;
   TASTENSTATUS = TASTE1 + TASTE2 + TASTE3;
   return TASTENSTATUS;
 }
 
-int TASTE()//prüft ob eine Eingabe gemacht wurde und keine Tasten mehr gedrückt sind
+//prüft ob eine Eingabe gemacht wurde und keine Tasten mehr gedrückt sind
+int TASTE()
 {
   int TASTE = 0;
+  //WENN TASTE INAKTIV UNABHÄNGIG VON VORHERIGEM ZUSTAND
   if(digitalRead(2)==LOW) TASTE1 = 1;
+  //WENN TASTE AKTIV UND ZUVOR ALLE TASTEN LOSGELASSEN WURDEN
   if(digitalRead(2)== HIGH && TASTENSTATUS()==3){
     TASTE1 = 0;
     TASTE = 1;
@@ -253,6 +263,7 @@ void GESAMTZEIT(){
 void SPEICHERMENU(){
   int EBENE = 0;
   while(EBENE != -2){
+  EBENE = 0;
   if(MENUE != 2)
   {
   MENUE = 2;
